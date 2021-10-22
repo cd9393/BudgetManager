@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Budget {
     private ArrayList<String> purchases;
-    private float balance;
+    private double balance;
 
     public Budget() {
         this.purchases = new ArrayList<String>();
@@ -13,14 +13,17 @@ public class Budget {
     }
 
     public void addPurchase(String purchase) {
+        double purchaseAmount = getPrice(purchase);
+        setBalance(this.balance - purchaseAmount);
         this.purchases.add(purchase);
+
     }
 
-    public float getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(float balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -35,7 +38,7 @@ public class Budget {
 
     public void showPurchases() {
         if (this.purchases.size() == 0) {
-            System.out.println("There are no purchases to show");
+            System.out.println("The purchase list is empty");
         } else {
             for (int i = 0; i < this.purchases.size(); i++) {
                 System.out.println(this.purchases.get(i));
