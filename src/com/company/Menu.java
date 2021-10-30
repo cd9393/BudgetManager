@@ -1,12 +1,18 @@
-package budget;
+package com.company;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Menu {
     budget.Budget budget;
+    private final File DATABASE;
     boolean isRunning;
     public Menu() {
         this.budget = new budget.Budget();
+        DATABASE = new File("purchases.txt");
         this.isRunning = true;
     }
 
@@ -36,6 +42,12 @@ public class Menu {
                     case 4 :
                         showBalance();
                         break;
+                    case 5 :
+                        save();
+                        break;
+                    case 6 :
+                        load();
+                        break;
                     case 0 :
                         exitApp();
                         break;
@@ -45,6 +57,35 @@ public class Menu {
                 }
 
             }
+        }
+    }
+
+    private void load() {
+        try (Scanner scanner = new Scanner(DATABASE)) {
+            BigDecimal budget = new BigDecimal(scanner.nextLine());
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                String [] input = line.split(";");
+                this.budget.addPurchase(Category.valueOf(input[0]) , input[1], input[2]);
+            }
+            this.budget.setBalance(budget);
+            System.out.println("Purchases were loaded!");
+            System.out.println();
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void save() {
+        try (PrintWriter printWriter = new PrintWriter(DATABASE)) {
+            printWriter.println(this.budget.getBalance());
+            for (Purchase purchase : budget.getPurchases()) {
+                printWriter.println(purchase.getCategory() + ";" + purchase.getDescription() + ";" + purchase.getPrice());
+            }
+            System.out.println("Purchases were saved!");
+            System.out.println();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -70,16 +111,16 @@ public class Menu {
                 int category = scanner.nextInt();
                 switch (category) {
                     case 1:
-                        this.budget.showPurchasesByCategory("Food");
+                        this.budget.showPurchasesByCategory("FOOD");
                         break;
                     case 2:
-                        this.budget.showPurchasesByCategory("Clothes");
+                        this.budget.showPurchasesByCategory("CLOTHES");
                         break;
                     case 3:
-                        this.budget.showPurchasesByCategory("Entertainment");
+                        this.budget.showPurchasesByCategory("ENTERTAINMENT");
                         break;
                     case 4:
-                        this.budget.showPurchasesByCategory("Other");
+                        this.budget.showPurchasesByCategory("OTHER");
                         break;
                     case 5:
                         this.budget.showAllPurchases();
@@ -99,8 +140,8 @@ public class Menu {
     private void showPurchaseMenu() {
         System.out.println("Choose the type of Purchases");
         int menuNumber = 1;
-        for (String category : this.budget.getCategorisedPurchases().keySet()) {
-            System.out.println(menuNumber + ") " + category);
+        for (Category category : Category.values()) {
+            System.out.println(menuNumber + ") " + category.toString());
             menuNumber++;
         }
         System.out.println("5) All");
@@ -115,13 +156,13 @@ public class Menu {
             if ("Exit".equals(category)) {
                 break;
             }
+            Category purchaseCategory = Category.valueOf(category);
             System.out.println("Enter Purchase name:");
             scanner.nextLine();
             String purchaseName = scanner.nextLine();
             System.out.println("Enter it's price:");
             String purchasePrice = "$".concat(scanner.nextLine());
-            this.budget.addPurchaseToCategory(category, purchaseName.concat(" ").concat(purchasePrice));
-            //this.budget.addPurchase(purchaseName.concat(" ").concat(purchasePrice));
+            this.budget.addPurchase(purchaseCategory, purchaseName, purchasePrice);
             System.out.println();
         } while(!"Exit".equals(category));
 
@@ -135,16 +176,16 @@ public class Menu {
             int chosenOption = scanner.nextInt();
             switch (chosenOption) {
                 case 1:
-                    category = "Food";
+                    category = "FOOD";
                     break;
                 case 2:
-                    category = "Clothes";
+                    category = "CLOTHES";
                     break;
                 case 3:
-                    category = "Entertainment";
+                    category = "ENTERTAINMENT";
                     break;
                 case 4:
-                    category =  "Other";
+                    category =  "OTHER";
                     break;
                 case 5:
                     category = "Exit";
@@ -161,8 +202,8 @@ public class Menu {
     private void showAddPurchaseMenu() {
         System.out.println("Choose the type of Purchases");
         int menuNumber = 1;
-        for (String category : this.budget.getCategorisedPurchases().keySet()) {
-            System.out.println(menuNumber + ") " + category);
+        for (Category category : Category.values()) {
+            System.out.println(menuNumber + ") " + category.toString());
             menuNumber++;
         }
         System.out.println("5) Back");
@@ -171,8 +212,10 @@ public class Menu {
 
     private void addIncome(Scanner scanner) {
         System.out.println("Enter income:");
-        int income = scanner.nextInt();
-        this.budget.setBalance(this.budget.getBalance() + income);
+        scanner.nextLine();
+        String input = scanner.nextLine();
+        BigDecimal income = new BigDecimal(input);
+        this.budget.setBalance(this.budget.getBalance().add(income));
         System.out.println("Income was added!");
         System.out.println();
     }
@@ -183,6 +226,8 @@ public class Menu {
         System.out.println("2) Add purchase");
         System.out.println("3) Show list of purchases");
         System.out.println("4) Balance");
+        System.out.println("5) Save");
+        System.out.println("6) Load");
         System.out.println("0) Exit");
         System.out.println();
     }

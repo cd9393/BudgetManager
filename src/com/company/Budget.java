@@ -1,77 +1,68 @@
 package budget;
 
+import com.company.Category;
+import com.company.Purchase;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Budget {
-    private ArrayList<String> purchases;
-    private Map<String, ArrayList<String>> categorisedPurchases;
-    private double balance;
+    private ArrayList<Purchase> purchases;
+    private BigDecimal balance;
 
     public Budget() {
-        this.purchases = new ArrayList<String>();
-        this.categorisedPurchases = new LinkedHashMap<>();
-        categorisedPurchases.put("Food", new ArrayList<>());
-        categorisedPurchases.put("Clothes", new ArrayList<>());
-        categorisedPurchases.put("Entertainment", new ArrayList<>());
-        categorisedPurchases.put("Other", new ArrayList<>());
-        this.balance = 0;
+        this.purchases = new ArrayList<Purchase>();
+        balance = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    public void addPurchaseToCategory(String category, String purchase) {
-        ArrayList<String> purchases = this.categorisedPurchases.get(category);
-        purchases.add(purchase);
-        this.categorisedPurchases.put(category,purchases);
-        addPurchase(purchase);
-    }
 
-    public void addPurchase(String purchase) {
-        double purchaseAmount = getPrice(purchase);
-        setBalance(this.balance - purchaseAmount);
-        this.purchases.add(purchase);
+    public void addPurchase(Category category, String description, String price) {
+        BigDecimal purchaseAmount = getPrice(price);
+        setBalance(this.balance.subtract(purchaseAmount));
+        this.purchases.add(new Purchase(description, category, purchaseAmount));
         System.out.println("Purchase was added!");
 
     }
 
-    public Map<String, ArrayList<String>> getCategorisedPurchases() {
-        return categorisedPurchases;
-    }
-
-    public ArrayList<String> getPurchases() {
+    public ArrayList<Purchase> getPurchases() {
         return purchases;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
-    public Double returnTotal(ArrayList<String> purchases) {
-        Double total = 0.00;
-
-        for (int i = 0; i < purchases.size(); i++) {
-            total += getPrice(purchases.get(i));
-        }
-        return total;
-    }
-
     public void showPurchasesByCategory(String category) {
-        ArrayList<String> purchases = this.categorisedPurchases.get(category);
+        Category purchaseCategory = Category.valueOf(category);
+        ArrayList<Purchase> purchases = filterPurchases(purchaseCategory);
         if (purchases.size() == 0) {
             System.out.println("The purchase list is empty!");
             System.out.println();
         } else {
             for (int i = 0; i < purchases.size(); i++) {
-                System.out.println(purchases.get(i));
+                System.out.println(purchases.get(i).getDescription() + " " + "$" + purchases.get(i).getPrice());
             }
             System.out.println("Total sum: $" + returnTotal(purchases));
             System.out.println();
         }
+    }
+
+    private ArrayList<Purchase> filterPurchases(Category category) {
+        ArrayList<Purchase> filteredPurchases = new ArrayList<>();
+        for (Purchase purchase : this.purchases) {
+            if (purchase.getCategory() == category) {
+                filteredPurchases.add(purchase);
+            }
+        }
+        return filteredPurchases;
     }
 
     public void showAllPurchases() {
@@ -80,16 +71,25 @@ public class Budget {
             System.out.println();
         } else {
             for (int i = 0; i < this.purchases.size(); i++) {
-                System.out.println(this.purchases.get(i));
+                System.out.println(this.purchases.get(i).getDescription() + " " + "$"+this.purchases.get(i).getPrice());
             }
             System.out.println("Total sum: $" + returnTotal(this.purchases));
             System.out.println();
         }
     }
 
-    private double getPrice(String input) {
+    public BigDecimal returnTotal(ArrayList<Purchase> purchases) {
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (Purchase purchase : purchases) {
+            total = total.add(purchase.getPrice());
+        }
+        return total;
+    }
+
+    private BigDecimal getPrice(String input) {
         int indexOfDollar = input.indexOf("$");
         String substring = input.substring(indexOfDollar + 1);
-        return Double.parseDouble(substring);
+        return new BigDecimal(substring);
     }
 }

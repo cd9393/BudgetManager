@@ -1,0 +1,4 @@
+977.00
+FOOD;coffee;3.50
+FOOD;bagel;4.50
+ENTERTAINMENT;cinema;15.00
