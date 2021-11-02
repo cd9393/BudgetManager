@@ -3,7 +3,7 @@ package com.company;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Purchase {
+public class Purchase  {
     private String description;
     private Category category;
     private BigDecimal price;
@@ -13,6 +13,7 @@ public class Purchase {
         this.category = category;
         this.price = price.setScale(2, RoundingMode.HALF_EVEN);
     }
+
 
     public String getDescription() {
         return description;

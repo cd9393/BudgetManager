@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Menu {
-    budget.Budget budget;
+    Budget budget;
     private final File DATABASE;
     boolean isRunning;
     public Menu() {
-        this.budget = new budget.Budget();
+        this.budget = new Budget();
         DATABASE = new File("purchases.txt");
         this.isRunning = true;
     }
@@ -47,6 +47,9 @@ public class Menu {
                         break;
                     case 6 :
                         load();
+                        break;
+                    case 7 :
+                        analyze(scanner);
                         break;
                     case 0 :
                         exitApp();
@@ -228,7 +231,96 @@ public class Menu {
         System.out.println("4) Balance");
         System.out.println("5) Save");
         System.out.println("6) Load");
+        System.out.println("7) Analyze");
         System.out.println("0) Exit");
         System.out.println();
+    }
+
+    private void analyze(Scanner scanner) {
+        boolean isRunning = true;
+        do {
+            int choice = getAnalyzeChoice(scanner);
+
+            switch (choice) {
+                case 1:
+                    budget.sortPurchases(budget.getPurchases());
+                    System.out.println("All:");
+                    budget.showAllPurchases();
+                    break;
+                case 2:
+                    budget.sortByType();
+                    break;
+                case 3:
+                    String categoryString = chooseCategoryToSort(scanner);
+                    Category category =Category.valueOf(categoryString);
+                    budget.sortCertainType(category);
+                    break;
+                default:
+                    isRunning = false;
+                    break;
+            }
+        } while(isRunning);
+    }
+
+    private String chooseCategoryToSort(Scanner scanner) {
+        String category = null;
+        boolean isWrongChoice = false;
+        do {
+            showPurchaseCategory();
+            int chosenOption = scanner.nextInt();
+            switch (chosenOption) {
+                case 1:
+                    category = "FOOD";
+                    break;
+                case 2:
+                    category = "CLOTHES";
+                    break;
+                case 3:
+                    category = "ENTERTAINMENT";
+                    break;
+                case 4:
+                    category =  "OTHER";
+                    break;
+                default:
+                    System.out.println("Please make a valid selection");
+                    isWrongChoice = true;
+                    break;
+            }
+        }while(isWrongChoice);
+        return category;
+    }
+
+    private void showPurchaseCategory() {
+        System.out.println("Choose the type of Purchases");
+        int menuNumber = 1;
+        for (Category category : Category.values()) {
+            System.out.println(menuNumber + ") " + category.toString());
+            menuNumber++;
+        }
+        System.out.println();
+    }
+
+    private static int getAnalyzeChoice(Scanner scanner) {
+        boolean isWrongChoice = false;
+        int chosenOption;
+        do {
+            displayAnalyzeMenu();
+            scanner.nextLine();
+            chosenOption = Integer.parseInt(scanner.nextLine());
+            if (chosenOption < 1 || chosenOption > 4) {
+                System.out.println("Please make a valid selection");
+                isWrongChoice = true;
+            }
+
+        } while(isWrongChoice);
+        return chosenOption;
+    }
+
+    private static void displayAnalyzeMenu() {
+        System.out.println("How do you want to sort?");
+        System.out.println("1) Sort all purchases");
+        System.out.println("2) Sort by type");
+        System.out.println("3) Sort certain type");
+        System.out.println("4) Back");
     }
 }
