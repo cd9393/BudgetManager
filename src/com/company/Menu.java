@@ -28,7 +28,7 @@ public class Menu {
         try (Scanner scanner = new Scanner(System.in)) {
             while (isRunning()) {
                 displayMenu();
-                int input = scanner.nextInt();
+                int input = Integer.parseInt(scanner.nextLine());
                 switch (input) {
                     case 1 :
                         addIncome(scanner);
@@ -111,7 +111,7 @@ public class Menu {
             boolean isMenuRunning = true;
             while (isMenuRunning) {
                 showPurchaseMenu();
-                int category = scanner.nextInt();
+                int category = Integer.parseInt(scanner.nextLine());
                 switch (category) {
                     case 1:
                         this.budget.showPurchasesByCategory("FOOD");
@@ -161,7 +161,6 @@ public class Menu {
             }
             Category purchaseCategory = Category.valueOf(category);
             System.out.println("Enter Purchase name:");
-            scanner.nextLine();
             String purchaseName = scanner.nextLine();
             System.out.println("Enter it's price:");
             String purchasePrice = "$".concat(scanner.nextLine());
@@ -176,7 +175,7 @@ public class Menu {
         boolean isWrongChoice = false;
         do {
             showAddPurchaseMenu();
-            int chosenOption = scanner.nextInt();
+            int chosenOption = Integer.parseInt(scanner.nextLine());
             switch (chosenOption) {
                 case 1:
                     category = "FOOD";
@@ -203,6 +202,7 @@ public class Menu {
     }
 
     private void showAddPurchaseMenu() {
+        System.out.println();
         System.out.println("Choose the type of Purchases");
         int menuNumber = 1;
         for (Category category : Category.values()) {
@@ -215,7 +215,6 @@ public class Menu {
 
     private void addIncome(Scanner scanner) {
         System.out.println("Enter income:");
-        scanner.nextLine();
         String input = scanner.nextLine();
         BigDecimal income = new BigDecimal(input);
         this.budget.setBalance(this.budget.getBalance().add(income));
@@ -224,6 +223,7 @@ public class Menu {
     }
 
     private static void displayMenu() {
+        System.out.println();
         System.out.println("Choose your action:");
         System.out.println("1) Add Income");
         System.out.println("2) Add purchase");
@@ -244,7 +244,9 @@ public class Menu {
             switch (choice) {
                 case 1:
                     budget.sortPurchases(budget.getPurchases());
-                    System.out.println("All:");
+                    if (budget.getPurchases().size() > 0) {
+                        System.out.println("All:");
+                    }
                     budget.showAllPurchases();
                     break;
                 case 2:
@@ -267,7 +269,7 @@ public class Menu {
         boolean isWrongChoice = false;
         do {
             showPurchaseCategory();
-            int chosenOption = scanner.nextInt();
+            int chosenOption = Integer.parseInt(scanner.nextLine());
             switch (chosenOption) {
                 case 1:
                     category = "FOOD";
@@ -291,6 +293,7 @@ public class Menu {
     }
 
     private void showPurchaseCategory() {
+        System.out.println();
         System.out.println("Choose the type of Purchases");
         int menuNumber = 1;
         for (Category category : Category.values()) {
@@ -305,7 +308,6 @@ public class Menu {
         int chosenOption;
         do {
             displayAnalyzeMenu();
-            scanner.nextLine();
             chosenOption = Integer.parseInt(scanner.nextLine());
             if (chosenOption < 1 || chosenOption > 4) {
                 System.out.println("Please make a valid selection");
@@ -317,10 +319,12 @@ public class Menu {
     }
 
     private static void displayAnalyzeMenu() {
+        System.out.println();
         System.out.println("How do you want to sort?");
         System.out.println("1) Sort all purchases");
         System.out.println("2) Sort by type");
         System.out.println("3) Sort certain type");
         System.out.println("4) Back");
+        System.out.println();
     }
 }

@@ -144,14 +144,16 @@ public class Budget {
         for (Category category : Category.values()) {
             ArrayList<Purchase> purchases = filterPurchases(category);
             if (purchases.size() == 0) {
-                String string = category.toString().concat(" - $0");
+                String categoryFormatted = category.toString().substring(0,1) + category.toString().substring(1).toLowerCase();
+                String string = categoryFormatted.concat(" - $0");
                 categoryTotals.add(string);
             } else {
                 BigDecimal total = BigDecimal.ZERO;
                 for (Purchase purchase : purchases) {
                     total = total.add(purchase.getPrice());
                 }
-                String string = category.toString().concat(" - $").concat(total.toString());
+                String categoryFormatted = category.toString().substring(0,1) + category.toString().substring(1).toLowerCase();
+                String string = categoryFormatted.concat(" - $").concat(total.toString());
                 categoryTotals.add(string);
             }
         }
